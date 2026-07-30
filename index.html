@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can people find you on Google?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12151C;
+    --paper:#F6F4EF;
+    --signal:#E8622C;
+    --signal-dim:#E8622C33;
+    --slate:#8A8F98;
+    --line:#2A2F3A;
+    --good:#3B8C6E;
+    --good-dim:#3B8C6E33;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .wrap{
+    max-width:480px;
+    margin:0 auto;
+    padding:32px 24px 64px;
+    position:relative;
+  }
+
+  /* Beacon signature element */
+  .beacon-field{
+    position:relative;
+    height:120px;
+    margin-bottom:8px;
+  }
+  .beacon{
+    position:absolute;
+    left:50%;
+    top:0;
+    transform:translateX(-50%);
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:var(--signal);
+    box-shadow:0 0 0 0 var(--signal-dim);
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .beacon{ animation: pulse 2.4s ease-out infinite; }
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 var(--signal-dim); }
+    70%{ box-shadow:0 0 0 44px transparent; }
+    100%{ box-shadow:0 0 0 0 transparent; }
+  }
+  .beacon-rings{
+    position:absolute;
+    left:50%; top:7px;
+    transform:translateX(-50%);
+    width:1px; height:1px;
+  }
+  .ring{
+    position:absolute;
+    border:1px solid var(--line);
+    border-radius:50%;
+    left:50%; top:50%;
+  }
+  .ring.r1{ width:60px; height:60px; margin:-30px 0 0 -30px; }
+  .ring.r2{ width:96px; height:96px; margin:-48px 0 0 -48px; }
+
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--signal);
+    font-weight:500;
+    text-align:center;
+    margin-top:20px;
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:28px;
+    font-weight:700;
+    line-height:1.2;
+    text-align:center;
+    margin:10px 0 6px;
+  }
+  .sub{
+    color:var(--slate);
+    font-size:14px;
+    text-align:center;
+    line-height:1.5;
+    max-width:36ch;
+    margin:0 auto 36px;
+  }
+
+  .q-list{ display:flex; flex-direction:column; gap:10px; }
+  .q{
+    background:#181C25;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .q-text{ font-size:15px; line-height:1.4; }
+  .toggle{
+    flex-shrink:0;
+    width:48px;
+    height:28px;
+    border-radius:14px;
+    background:#2A2F3A;
+    position:relative;
+    cursor:pointer;
+    border:none;
+    transition:background .2s;
+  }
+  .toggle::after{
+    content:'';
+    position:absolute;
+    top:3px; left:3px;
+    width:22px; height:22px;
+    border-radius:50%;
+    background:var(--paper);
+    transition:transform .2s;
+  }
+  .toggle[data-on="true"]{ background:var(--good); }
+  .toggle[data-on="true"]::after{ transform:translateX(20px); }
+  .toggle[aria-pressed]{ appearance:none; }
+
+  .meter-block{
+    margin-top:32px;
+    padding:20px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#181C25;
+  }
+  .meter-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    color:var(--slate);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    margin-bottom:10px;
+  }
+  .meter-track{
+    height:10px;
+    border-radius:6px;
+    background:#2A2F3A;
+    overflow:hidden;
+  }
+  .meter-fill{
+    height:100%;
+    width:0%;
+    border-radius:6px;
+    background:linear-gradient(90deg, var(--signal), var(--good));
+    transition:width .4s ease;
+  }
+  .verdict{
+    margin-top:14px;
+    font-size:15px;
+    line-height:1.5;
+  }
+  .verdict strong{ color:var(--paper); font-weight:500; }
+
+  .cta{
+    display:block;
+    text-align:center;
+    margin-top:24px;
+    padding:16px;
+    border-radius:12px;
+    background:var(--signal);
+    color:var(--ink);
+    font-weight:500;
+    font-size:16px;
+    text-decoration:none;
+    transition:opacity .15s;
+  }
+  .cta:active{ opacity:0.85; }
+  .cta-note{
+    text-align:center;
+    color:var(--slate);
+    font-size:12px;
+    margin-top:10px;
+  }
+
+  :focus-visible{ outline:2px solid var(--signal); outline-offset:2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="beacon-field">
+    <div class="beacon-rings">
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+    </div>
+    <div class="beacon"></div>
+  </div>
+
+  <p class="eyebrow">2-minute check</p>
+  <h1>Can people find you<br>on Google right now?</h1>
+  <p class="sub">Answer honestly. Most business owners are surprised by their score.</p>
+
+  <div class="q-list" id="qList">
+    <div class="q">
+      <span class="q-text">I have a website</span>
+      <button class="toggle" data-on="false" aria-pressed="false"></button>
+    </div>
+    <div class="q">
+      <span class="q-text">I'm listed on Google Maps / Business Profile</span>
+      <button class="toggle" data-on="false" aria-pressed="false"></button>
+    </div>
+    <div class="q">
+      <span class="q-text">I have customer reviews online</span>
+      <button class="toggle" data-on="false" aria-pressed="false"></button>
+    </div>
+    <div class="q">
+      <span class="q-text">My hours and contact info are visible online</span>
+      <button class="toggle" data-on="false" aria-pressed="false"></button>
+    </div>
+    <div class="q">
+      <span class="q-text">I show up when someone searches "[my service] near me"</span>
+      <button class="toggle" data-on="false" aria-pressed="false"></button>
+    </div>
+  </div>
+
+  <div class="meter-block">
+    <div class="meter-label">
+      <span>Visibility score</span>
+      <span id="scoreText">0 / 5</span>
+    </div>
+    <div class="meter-track">
+      <div class="meter-fill" id="meterFill"></div>
+    </div>
+    <p class="verdict" id="verdict">Toggle each one on if it's true for your business.</p>
+  </div>
+
+  <a class="cta" id="ctaBtn" href="#" target="_blank" rel="noopener">Send my score on WhatsApp</a>
+  <p class="cta-note">Opens WhatsApp with your result pre-filled — no obligation, just a look at where you stand.</p>
+
+</div>
+
+<script>
+  const toggles = document.querySelectorAll('.toggle');
+  const scoreText = document.getElementById('scoreText');
+  const meterFill = document.getElementById('meterFill');
+  const verdict = document.getElementById('verdict');
+  const ctaBtn = document.getElementById('ctaBtn');
+
+  // Set this to your WhatsApp number in international format, no + or leading 0.
+  const WHATSAPP_NUMBER = "27844333222";
+
+  const verdicts = [
+    "Right now you're effectively invisible online — every one of these gaps is a customer choosing a competitor instead.",
+    "You've got a small foothold, but most of your potential customers still can't find you when it counts.",
+    "You're partly visible — the basics need finishing before Google reliably sends people your way.",
+    "You're close. A few gaps are quietly costing you customers who are already searching for you.",
+    "Almost there — one or two details are holding back a business that's otherwise easy to find.",
+    "Strong visibility. You're doing more right than most local businesses — worth a quick check to make sure it stays that way."
+  ];
+
+  function update(){
+    let score = 0;
+    toggles.forEach(t => { if(t.dataset.on === "true") score++; });
+    scoreText.textContent = score + " / 5";
+    meterFill.style.width = (score/5*100) + "%";
+    verdict.innerHTML = "<strong>" + score + "/5.</strong> " + verdicts[score];
+
+    const msg = "Hi, I just did the Google visibility check and scored " + score + "/5. Can you help me get found online?";
+    ctaBtn.href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+  }
+
+  toggles.forEach(t => {
+    t.addEventListener('click', () => {
+      const on = t.dataset.on === "true";
+      t.dataset.on = (!on).toString();
+      t.setAttribute('aria-pressed', (!on).toString());
+      update();
+    });
+  });
+
+  update();
+</script>
+</body>
+</html>
