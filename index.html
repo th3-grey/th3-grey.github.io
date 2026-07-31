@@ -4,15 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Can people find you on Google?</title>
+
+<!-- Preload + async-swap Google Fonts so the first paint isn't blocked on font CSS -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" as="style"
+  href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap"
+  onload="this.onload=null;this.rel='stylesheet'">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap">
+</noscript>
+
 <style>
   /*
     60/30/10 split:
     60% — --ink   (dominant dark background)
     30% — --paper (secondary: text, cards, structure)
-    10% — --accent (#D7FF2F, used sparingly for emphasis: beacon, eyebrow, CTA, meter fill, active toggle)
+    10% — --accent (#D7FF2F, used sparingly: beacon, eyebrow, progress, active state, CTA, meter fill)
   */
   :root{
     --ink:#12151C;
@@ -38,165 +46,120 @@
   }
 
   /* Beacon signature element */
-  .beacon-field{
-    position:relative;
-    height:120px;
-    margin-bottom:8px;
-  }
+  .beacon-field{ position:relative; height:120px; margin-bottom:8px; }
   .beacon{
-    position:absolute;
-    left:50%;
-    top:0;
-    transform:translateX(-50%);
-    width:14px;
-    height:14px;
-    border-radius:50%;
+    position:absolute; left:50%; top:0; transform:translateX(-50%);
+    width:14px; height:14px; border-radius:50%;
     background:var(--accent);
     box-shadow:0 0 0 0 var(--accent-dim);
   }
-  @media (prefers-reduced-motion: no-preference){
-    .beacon{ animation: pulse 2.4s ease-out infinite; }
-  }
+  @media (prefers-reduced-motion: no-preference){ .beacon{ animation: pulse 2.4s ease-out infinite; } }
   @keyframes pulse{
     0%{ box-shadow:0 0 0 0 var(--accent-dim); }
     70%{ box-shadow:0 0 0 44px transparent; }
     100%{ box-shadow:0 0 0 0 transparent; }
   }
-  .beacon-rings{
-    position:absolute;
-    left:50%; top:7px;
-    transform:translateX(-50%);
-    width:1px; height:1px;
-  }
-  .ring{
-    position:absolute;
-    border:1px solid var(--line);
-    border-radius:50%;
-    left:50%; top:50%;
-  }
+  .beacon-rings{ position:absolute; left:50%; top:7px; transform:translateX(-50%); width:1px; height:1px; }
+  .ring{ position:absolute; border:1px solid var(--line); border-radius:50%; left:50%; top:50%; }
   .ring.r1{ width:60px; height:60px; margin:-30px 0 0 -30px; }
   .ring.r2{ width:96px; height:96px; margin:-48px 0 0 -48px; }
 
   .eyebrow{
-    font-size:12px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--accent);
-    font-weight:500;
-    text-align:center;
-    margin-top:20px;
+    font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--accent); font-weight:500; text-align:center; margin-top:20px;
   }
   h1{
-    font-family:'Space Grotesk', sans-serif;
-    font-size:28px;
-    font-weight:700;
-    line-height:1.2;
-    text-align:center;
-    margin:10px 0 6px;
-    color:var(--paper);
+    font-family:'Space Grotesk', sans-serif; font-size:28px; font-weight:700;
+    line-height:1.2; text-align:center; margin:10px 0 6px; color:var(--paper);
   }
   .sub{
-    color:var(--slate);
-    font-size:14px;
-    text-align:center;
-    line-height:1.5;
-    max-width:36ch;
-    margin:0 auto 36px;
+    color:var(--slate); font-size:14px; text-align:center; line-height:1.5;
+    max-width:36ch; margin:0 auto 32px;
   }
 
-  .q-list{ display:flex; flex-direction:column; gap:10px; }
-  .q{
-    background:#181C25;
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:16px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
+  /* Progress */
+  .progress-wrap{ margin-bottom:20px; }
+  .progress-label{
+    display:flex; justify-content:space-between; font-size:12px;
+    color:var(--slate); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;
   }
-  .q-text{ font-size:15px; line-height:1.4; color:var(--paper); }
-  .toggle{
-    flex-shrink:0;
-    width:48px;
-    height:28px;
-    border-radius:14px;
-    background:#2A2F3A;
-    position:relative;
-    cursor:pointer;
-    border:none;
-    transition:background .2s;
+  .progress-label span:last-child{ color:var(--accent); }
+  .progress-track{ height:6px; border-radius:4px; background:#2A2F3A; overflow:hidden; }
+  .progress-fill{ height:100%; width:0%; border-radius:4px; background:var(--accent); transition:width .35s ease; }
+
+  /* Sequenced question card */
+  .q-stage{ min-height:190px; }
+  .q-card{
+    background:#181C25; border:1px solid var(--line); border-radius:14px;
+    padding:28px 20px; text-align:center;
+    animation: fadeIn .3s ease;
   }
-  .toggle::after{
-    content:'';
-    position:absolute;
-    top:3px; left:3px;
-    width:22px; height:22px;
-    border-radius:50%;
-    background:var(--paper);
-    transition:transform .2s;
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  .q-text{ font-size:17px; line-height:1.45; color:var(--paper); margin-bottom:22px; }
+  .q-actions{ display:flex; gap:10px; }
+  .q-btn{
+    flex:1; padding:14px; border-radius:10px; border:1px solid var(--line);
+    background:#12151C; color:var(--paper); font-size:15px; font-weight:500;
+    cursor:pointer; transition:background .15s, border-color .15s, color .15s;
   }
-  .toggle[data-on="true"]{ background:var(--accent); }
-  .toggle[data-on="true"]::after{ background:var(--ink); transform:translateX(20px); }
-  .toggle[aria-pressed]{ appearance:none; }
+  .q-btn:hover{ border-color:var(--accent); }
+  .q-btn.yes{ background:var(--accent); color:var(--ink); border-color:var(--accent); }
+  .q-back{
+    display:inline-block; margin-top:14px; font-size:12px; color:var(--slate);
+    background:none; border:none; cursor:pointer; text-decoration:underline;
+  }
+
+  /* Results */
+  .results{ display:none; }
+  .results.show{ display:block; animation: fadeIn .35s ease; }
 
   .meter-block{
-    margin-top:32px;
-    padding:20px;
-    border:1px solid var(--line);
-    border-radius:14px;
-    background:#181C25;
+    padding:20px; border:1px solid var(--line); border-radius:14px; background:#181C25;
   }
   .meter-label{
-    display:flex;
-    justify-content:space-between;
-    font-size:12px;
-    color:var(--slate);
-    text-transform:uppercase;
-    letter-spacing:0.08em;
-    margin-bottom:10px;
+    display:flex; justify-content:space-between; font-size:12px; color:var(--slate);
+    text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;
   }
-  .meter-track{
-    height:10px;
-    border-radius:6px;
-    background:#2A2F3A;
-    overflow:hidden;
-  }
-  .meter-fill{
-    height:100%;
-    width:0%;
-    border-radius:6px;
-    background:var(--accent);
-    transition:width .4s ease;
-  }
-  .verdict{
-    margin-top:14px;
-    font-size:15px;
-    line-height:1.5;
-    color:var(--paper);
-  }
+  .meter-track{ height:10px; border-radius:6px; background:#2A2F3A; overflow:hidden; }
+  .meter-fill{ height:100%; width:0%; border-radius:6px; background:var(--accent); transition:width .5s ease; }
+  .verdict{ margin-top:14px; font-size:15px; line-height:1.5; color:var(--paper); }
   .verdict strong{ color:var(--accent); font-weight:500; }
 
   .cta{
-    display:block;
-    text-align:center;
-    margin-top:24px;
-    padding:16px;
-    border-radius:12px;
-    background:var(--accent);
-    color:var(--ink);
-    font-weight:500;
-    font-size:16px;
-    text-decoration:none;
-    transition:opacity .15s;
+    display:block; text-align:center; margin-top:20px; padding:16px; border-radius:12px;
+    background:var(--accent); color:var(--ink); font-weight:500; font-size:16px;
+    text-decoration:none; transition:opacity .15s;
   }
   .cta:active{ opacity:0.85; }
-  .cta-note{
-    text-align:center;
-    color:var(--slate);
-    font-size:12px;
-    margin-top:10px;
+  .cta-note{ text-align:center; color:var(--slate); font-size:12px; margin-top:10px; }
+
+  /* Backup channel */
+  .fallback{ text-align:center; margin-top:18px; }
+  .fallback-toggle{
+    background:none; border:none; color:var(--slate); font-size:13px;
+    text-decoration:underline; cursor:pointer; padding:6px;
   }
+  .fallback-toggle:hover{ color:var(--paper); }
+  .fallback-form{
+    display:none; margin-top:14px; background:#181C25; border:1px solid var(--line);
+    border-radius:12px; padding:16px; text-align:left;
+  }
+  .fallback-form.show{ display:block; animation: fadeIn .25s ease; }
+  .fallback-form label{ font-size:12px; color:var(--slate); text-transform:uppercase; letter-spacing:0.06em; }
+  .fallback-form input{
+    width:100%; margin-top:6px; margin-bottom:12px; padding:12px; border-radius:8px;
+    border:1px solid var(--line); background:#12151C; color:var(--paper); font-size:15px;
+    font-family:'Inter', sans-serif;
+  }
+  .fallback-form input:focus{ outline:none; border-color:var(--accent); }
+  .fallback-submit{
+    width:100%; padding:13px; border-radius:8px; border:1px solid var(--accent);
+    background:transparent; color:var(--accent); font-weight:500; font-size:14px; cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .fallback-submit:hover{ background:var(--accent); color:var(--ink); }
+  .fallback-confirm{ font-size:13px; color:var(--accent); text-align:center; margin-top:10px; display:none; }
+  .fallback-confirm.show{ display:block; }
 
   :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 </style>
@@ -205,65 +168,74 @@
 <div class="wrap">
 
   <div class="beacon-field">
-    <div class="beacon-rings">
-      <div class="ring r1"></div>
-      <div class="ring r2"></div>
-    </div>
+    <div class="beacon-rings"><div class="ring r1"></div><div class="ring r2"></div></div>
     <div class="beacon"></div>
   </div>
 
   <p class="eyebrow">2-minute check</p>
   <h1>Can people find you<br>on Google right now?</h1>
-  <p class="sub">Answer honestly. </p>
+  <p class="sub">Answer honestly. Most business owners are surprised by their score.</p>
 
-  <div class="q-list" id="qList">
-    <div class="q">
-      <span class="q-text">I have a website</span>
-      <button class="toggle" data-on="false" aria-pressed="false"></button>
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Progress</span>
+      <span id="progressText">1 of 5</span>
     </div>
-    <div class="q">
-      <span class="q-text">I'm listed on Google Maps / Business Profile</span>
-      <button class="toggle" data-on="false" aria-pressed="false"></button>
-    </div>
-    <div class="q">
-      <span class="q-text">I have customer reviews online</span>
-      <button class="toggle" data-on="false" aria-pressed="false"></button>
-    </div>
-    <div class="q">
-      <span class="q-text">My hours and contact info are visible online</span>
-      <button class="toggle" data-on="false" aria-pressed="false"></button>
-    </div>
-    <div class="q">
-      <span class="q-text">I show up when someone searches "[my service] near me"</span>
-      <button class="toggle" data-on="false" aria-pressed="false"></button>
-    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   </div>
 
-  <div class="meter-block">
-    <div class="meter-label">
-      <span>Visibility score</span>
-      <span id="scoreText">0 / 5</span>
+  <div class="q-stage" id="qStage">
+    <div class="q-card">
+      <p class="q-text" id="qText"></p>
+      <div class="q-actions">
+        <button class="q-btn" id="noBtn" type="button">No</button>
+        <button class="q-btn yes" id="yesBtn" type="button">Yes</button>
+      </div>
     </div>
-    <div class="meter-track">
-      <div class="meter-fill" id="meterFill"></div>
-    </div>
-    <p class="verdict" id="verdict">Toggle each one on if it's true for your business.</p>
+    <button class="q-back" id="backBtn" type="button" style="display:none;">&larr; back</button>
   </div>
 
-  <a class="cta" id="ctaBtn" href="#" target="_blank" rel="noopener">Send my score on WhatsApp</a>
-  <p class="cta-note">Opens WhatsApp with your result pre-filled — no obligation, just a look at where you stand.</p>
+  <div class="results" id="results">
+    <div class="meter-block">
+      <div class="meter-label">
+        <span>Visibility score</span>
+        <span id="scoreText">0 / 5</span>
+      </div>
+      <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+      <p class="verdict" id="verdict"></p>
+    </div>
+
+    <a class="cta" id="ctaBtn" href="#" target="_blank" rel="noopener"></a>
+    <p class="cta-note">Opens WhatsApp with your result pre-filled — no obligation, just a look at where you stand.</p>
+
+    <div class="fallback">
+      <button class="fallback-toggle" id="fallbackToggle" type="button">No WhatsApp? Leave your number instead →</button>
+      <form class="fallback-form" id="fallbackForm">
+        <label for="fallbackName">Name</label>
+        <input type="text" id="fallbackName" placeholder="Your name" required>
+        <label for="fallbackPhone">Phone number</label>
+        <input type="tel" id="fallbackPhone" placeholder="e.g. 082 123 4567" required>
+        <button class="fallback-submit" type="submit">Request a callback</button>
+      </form>
+      <p class="fallback-confirm" id="fallbackConfirm">Thanks — we'll call you shortly.</p>
+    </div>
+  </div>
 
 </div>
 
 <script>
-  const toggles = document.querySelectorAll('.toggle');
-  const scoreText = document.getElementById('scoreText');
-  const meterFill = document.getElementById('meterFill');
-  const verdict = document.getElementById('verdict');
-  const ctaBtn = document.getElementById('ctaBtn');
+  // ---- Config ----
+  const WHATSAPP_NUMBER = "27844333222"; // international format, no + or leading 0
+  // Replace with your real endpoint (CRM webhook, form backend, etc). Falls back to mailto for now.
+  const FALLBACK_NOTIFY_EMAIL = "leads@example.com";
 
-  // Set this to your WhatsApp number in international format, no + or leading 0.
-  const WHATSAPP_NUMBER = "27844333222";
+  const questions = [
+    "I have a website",
+    "I'm listed on Google Maps / Business Profile",
+    "I have customer reviews online",
+    "My hours and contact info are visible online",
+    "I show up when someone searches \"[my service] near me\""
+  ];
 
   const verdicts = [
     "Right now you're effectively invisible online — every one of these gaps is a customer choosing a competitor instead.",
@@ -274,27 +246,101 @@
     "Strong visibility. You're doing more right than most local businesses — worth a quick check to make sure it stays that way."
   ];
 
-  function update(){
-    let score = 0;
-    toggles.forEach(t => { if(t.dataset.on === "true") score++; });
-    scoreText.textContent = score + " / 5";
-    meterFill.style.width = (score/5*100) + "%";
-    verdict.innerHTML = "<strong>" + score + "/5.</strong> " + verdicts[score];
+  // CTA button text + prefilled WhatsApp message, tuned per score tier
+  const ctas = [
+    { label: "Fix these gaps before a competitor does",   msg: "I just scored {score}/5 on the Google visibility check — pretty much invisible online right now. Can you help me fix this?" },
+    { label: "Stop losing customers to competitors",       msg: "I scored {score}/5 on the Google visibility check — I know I'm missing customers. Can you help me close the gaps?" },
+    { label: "Finish setting up my Google presence",       msg: "I scored {score}/5 on the Google visibility check. I've got the basics but I'm missing a few things — can you help?" },
+    { label: "Close the gaps that are costing me leads",   msg: "I scored {score}/5 on the Google visibility check — close, but a couple of things are still costing me leads. Can you help?" },
+    { label: "Get the last details sorted",                msg: "I scored {score}/5 on the Google visibility check — almost there. Can you help me get the rest sorted?" },
+    { label: "See how to protect my visibility",           msg: "I scored {score}/5 on the Google visibility check. I'm in good shape but want to make sure it stays that way — can you help?" }
+  ];
 
-    const msg = "Hi, I just did the Google visibility check and scored " + score + "/5. Can you help me get found online?";
-    ctaBtn.href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+  // ---- State ----
+  const answers = [];
+  let current = 0;
+
+  const qText = document.getElementById('qText');
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const backBtn = document.getElementById('backBtn');
+  const qStage = document.getElementById('qStage');
+  const progressText = document.getElementById('progressText');
+  const progressFill = document.getElementById('progressFill');
+  const results = document.getElementById('results');
+
+  function renderQuestion(){
+    qText.textContent = questions[current];
+    progressText.textContent = (current + 1) + " of " + questions.length;
+    progressFill.style.width = (current / questions.length * 100) + "%";
+    backBtn.style.display = current > 0 ? "inline-block" : "none";
   }
 
-  toggles.forEach(t => {
-    t.addEventListener('click', () => {
-      const on = t.dataset.on === "true";
-      t.dataset.on = (!on).toString();
-      t.setAttribute('aria-pressed', (!on).toString());
-      update();
-    });
+  function answer(val){
+    answers[current] = val;
+    current++;
+    if(current < questions.length){
+      renderQuestion();
+    }else{
+      progressFill.style.width = "100%";
+      progressText.textContent = questions.length + " of " + questions.length;
+      qStage.style.display = "none";
+      showResults();
+    }
+  }
+
+  backBtn.addEventListener('click', () => {
+    if(current > 0){
+      current--;
+      renderQuestion();
+    }
   });
 
-  update();
+  yesBtn.addEventListener('click', () => answer(true));
+  noBtn.addEventListener('click', () => answer(false));
+
+  function showResults(){
+    const score = answers.filter(Boolean).length;
+    document.getElementById('scoreText').textContent = score + " / 5";
+    document.getElementById('meterFill').style.width = (score/5*100) + "%";
+    document.getElementById('verdict').innerHTML = "<strong>" + score + "/5.</strong> " + verdicts[score];
+
+    const cta = ctas[score];
+    const ctaBtn = document.getElementById('ctaBtn');
+    ctaBtn.textContent = cta.label;
+    const msg = cta.msg.replace("{score}", score);
+    ctaBtn.href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+
+    results.classList.add('show');
+  }
+
+  // ---- Fallback / backup channel ----
+  const fallbackToggle = document.getElementById('fallbackToggle');
+  const fallbackForm = document.getElementById('fallbackForm');
+  const fallbackConfirm = document.getElementById('fallbackConfirm');
+
+  fallbackToggle.addEventListener('click', () => {
+    fallbackForm.classList.toggle('show');
+  });
+
+  fallbackForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('fallbackName').value.trim();
+    const phone = document.getElementById('fallbackPhone').value.trim();
+    const score = answers.filter(Boolean).length;
+
+    // TODO: replace this with a real POST to your CRM / lead endpoint.
+    // Mailto is a no-backend placeholder so the form is functional out of the box.
+    const subject = encodeURIComponent("Callback request — visibility score " + score + "/5");
+    const body = encodeURIComponent("Name: " + name + "\nPhone: " + phone + "\nScore: " + score + "/5");
+    window.location.href = "mailto:" + FALLBACK_NOTIFY_EMAIL + "?subject=" + subject + "&body=" + body;
+
+    fallbackForm.classList.remove('show');
+    fallbackConfirm.classList.add('show');
+  });
+
+  // ---- Init ----
+  renderQuestion();
 </script>
 </body>
 </html>
