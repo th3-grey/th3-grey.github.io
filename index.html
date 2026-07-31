@@ -8,15 +8,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  /*
+    60/30/10 split:
+    60% — --ink   (dominant dark background)
+    30% — --paper (secondary: text, cards, structure)
+    10% — --accent (#D7FF2F, used sparingly for emphasis: beacon, eyebrow, CTA, meter fill, active toggle)
+  */
   :root{
     --ink:#12151C;
     --paper:#F6F4EF;
-    --signal:#E8622C;
-    --signal-dim:#E8622C33;
+    --accent:#D7FF2F;
+    --accent-dim:#D7FF2F33;
     --slate:#8A8F98;
     --line:#2A2F3A;
-    --good:#3B8C6E;
-    --good-dim:#3B8C6E33;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{
@@ -47,14 +51,14 @@
     width:14px;
     height:14px;
     border-radius:50%;
-    background:var(--signal);
-    box-shadow:0 0 0 0 var(--signal-dim);
+    background:var(--accent);
+    box-shadow:0 0 0 0 var(--accent-dim);
   }
   @media (prefers-reduced-motion: no-preference){
     .beacon{ animation: pulse 2.4s ease-out infinite; }
   }
   @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 var(--signal-dim); }
+    0%{ box-shadow:0 0 0 0 var(--accent-dim); }
     70%{ box-shadow:0 0 0 44px transparent; }
     100%{ box-shadow:0 0 0 0 transparent; }
   }
@@ -77,7 +81,7 @@
     font-size:12px;
     letter-spacing:0.14em;
     text-transform:uppercase;
-    color:var(--signal);
+    color:var(--accent);
     font-weight:500;
     text-align:center;
     margin-top:20px;
@@ -89,6 +93,7 @@
     line-height:1.2;
     text-align:center;
     margin:10px 0 6px;
+    color:var(--paper);
   }
   .sub{
     color:var(--slate);
@@ -110,7 +115,7 @@
     justify-content:space-between;
     gap:12px;
   }
-  .q-text{ font-size:15px; line-height:1.4; }
+  .q-text{ font-size:15px; line-height:1.4; color:var(--paper); }
   .toggle{
     flex-shrink:0;
     width:48px;
@@ -131,8 +136,8 @@
     background:var(--paper);
     transition:transform .2s;
   }
-  .toggle[data-on="true"]{ background:var(--good); }
-  .toggle[data-on="true"]::after{ transform:translateX(20px); }
+  .toggle[data-on="true"]{ background:var(--accent); }
+  .toggle[data-on="true"]::after{ background:var(--ink); transform:translateX(20px); }
   .toggle[aria-pressed]{ appearance:none; }
 
   .meter-block{
@@ -161,15 +166,16 @@
     height:100%;
     width:0%;
     border-radius:6px;
-    background:linear-gradient(90deg, var(--signal), var(--good));
+    background:var(--accent);
     transition:width .4s ease;
   }
   .verdict{
     margin-top:14px;
     font-size:15px;
     line-height:1.5;
+    color:var(--paper);
   }
-  .verdict strong{ color:var(--paper); font-weight:500; }
+  .verdict strong{ color:var(--accent); font-weight:500; }
 
   .cta{
     display:block;
@@ -177,7 +183,7 @@
     margin-top:24px;
     padding:16px;
     border-radius:12px;
-    background:var(--signal);
+    background:var(--accent);
     color:var(--ink);
     font-weight:500;
     font-size:16px;
@@ -192,7 +198,7 @@
     margin-top:10px;
   }
 
-  :focus-visible{ outline:2px solid var(--signal); outline-offset:2px; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 </style>
 </head>
 <body>
@@ -208,7 +214,7 @@
 
   <p class="eyebrow">2-minute check</p>
   <h1>Can people find you<br>on Google right now?</h1>
-  <p class="sub">Answer honestly. Most business owners are surprised by their score.</p>
+  <p class="sub">Answer honestly. </p>
 
   <div class="q-list" id="qList">
     <div class="q">
